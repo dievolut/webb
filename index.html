@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parallax con Giroscopio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Parallax Espacial</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -11,7 +11,7 @@
       height: 100%;
       background: #111;
       overflow: hidden;
-      font-family: sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .parallax-container {
@@ -19,6 +19,7 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
+      background: black;
     }
 
     .layer {
@@ -32,43 +33,52 @@
 
     .permission-btn {
       position: absolute;
-      bottom: 30px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
       padding: 12px 24px;
-      background: white;
-      color: black;
-      font-weight: bold;
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
+      font-weight: 700;
       border-radius: 10px;
       cursor: pointer;
       z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
 
     .fallback-message {
       position: absolute;
-      top: 20px;
+      bottom: 20px;
       width: 100%;
       text-align: center;
       color: white;
       z-index: 20;
       font-size: 1rem;
+      text-shadow: 1px 1px 4px black;
+      user-select: none;
     }
   </style>
 </head>
 <body>
 
   <div class="parallax-container">
-    <div class="fallback-message" id="msg">Por favor, tocá "Activar Movimiento"</div>
-    <img src="https://images.unsplash.com/photo-1508614886488-f3b3b89d5bca?auto=format&fit=crop&w=1000&q=80" class="layer" data-depth="0.2" alt="Fondo Espacial">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Astronaut_icon.svg/512px-Astronaut_icon.svg.png" class="layer" data-depth="0.6" alt="Astronauta">
-    <button class="permission-btn" onclick="enableMotion()">Activar Movimiento</button>
+    <button class="permission-btn" onclick="enableMotion()">🚀 Activar Movimiento</button>
+    <div class="fallback-message" id="msg">Mové tu celular cuando actives el botón</div>
+
+    <!-- Fondo -->
+    <img src="/astrowolf.png" class="layer" data-depth="0.2" alt="Fondo Espacial" />
+
+    <!-- Primer plano -->
+    <img src="/astro.png" class="layer" data-depth="0.6" alt="Astronauta" />
   </div>
 
   <script>
     function enableMotion() {
+      const msg = document.getElementById('msg');
+
       const handler = (event) => {
-        const gamma = event.gamma || 0; // Izquierda-derecha
-        const beta = event.beta || 0;   // Adelante-atrás
+        const gamma = event.gamma || 0;
+        const beta = event.beta || 0;
 
         document.querySelectorAll('.layer').forEach(layer => {
           const depth = parseFloat(layer.dataset.depth);
@@ -78,27 +88,24 @@
         });
       };
 
-      const msg = document.getElementById('msg');
-      msg.innerText = "¡Mové tu celular!";
-
       if (typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
           .then(permissionState => {
             if (permissionState === 'granted') {
               window.addEventListener('deviceorientation', handler);
+              msg.innerText = '✔️ Movimiento activado. Mové el celular';
               document.querySelector('.permission-btn').style.display = 'none';
             } else {
-              msg.innerText = 'Permiso denegado 😞';
+              msg.innerText = '❌ Permiso denegado';
             }
           })
           .catch((err) => {
-            msg.innerText = 'Error al pedir permiso: ' + err;
+            msg.innerText = '⚠️ Error: ' + err;
           });
       } else {
-        // Android y navegadores sin bloqueo
         window.addEventListener('deviceorientation', handler);
+        msg.innerText = '✔️ Movimiento activado';
         document.querySelector('.permission-btn').style.display = 'none';
-        msg.innerText = "¡Mové tu celular!";
       }
     }
   </script>
